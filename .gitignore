@@ -8,3 +8,4 @@
 /ConfigEncryption/ConfigEncryption/obj*
 /.vs/EncryptDecryptAppConfigFile/v15/.suo
 /.vs/EncryptDecryptAppConfigFile/v15/Server/sqlite3
+/obj/x86/Release/EncryptDecryptAppConfigFile.csproj.GenerateResource.Cache

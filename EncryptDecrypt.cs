@@ -47,8 +47,6 @@ namespace EncryptDecryptAppConfigFile
         {
             try
             {
-                string s = "asdf";
-
                 // Prep the <configProtectedData> section for encryption/decryption with this tool
                 RemoveConfigProtectedDataXDTTransformXMLAttribute(configFileName, encrypt);
 

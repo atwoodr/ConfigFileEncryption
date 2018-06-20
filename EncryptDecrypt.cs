@@ -18,8 +18,14 @@ namespace EncryptDecryptAppConfigFile
         private string FileName = string.Empty;
         private static bool isUsingXDTNamespace = false;
 
+        private static List<string> specialXDTSections = new List<string>();
+
         public EncryptDecrypt()
         {
+            specialXDTSections.Add("connectionStrings");
+            specialXDTSections.Add("protectedAppSettings");
+            specialXDTSections.Add("configProtectedData");
+
             InitializeComponent();
 
             // Set default radio button choice
@@ -42,7 +48,7 @@ namespace EncryptDecryptAppConfigFile
             try
             {
                 // Prep the <configProtectedData> section for encryption / decryption with this tool
-                RemoveConfigProtectedDataXDTTransformXMLAttribute(configFileName);
+                RemoveConfigProtectedDataXDTTransformXMLAttribute(configFileName, encrypt);
 
                 // Open the configuration file for use
                 ExeConfigurationFileMap configMap = new ExeConfigurationFileMap { ExeConfigFilename = configFileName };
@@ -94,7 +100,7 @@ namespace EncryptDecryptAppConfigFile
         private static List<ConfigurationSection> InitializeConfigSections(Configuration configuration)
         {
             List<ConfigurationSection> configSections = new List<ConfigurationSection>();
-            ConnectionStringsSection connectionStringsSection = configuration.GetSection("connectionStrings") as ConnectionStringsSection;
+            ConfigurationSection connectionStringsSection = configuration.GetSection("connectionStrings");
             ConfigurationSection protectedAppSettingsSection = configuration.GetSection("protectedAppSettings");
 
             if (connectionStringsSection != null)
@@ -115,7 +121,8 @@ namespace EncryptDecryptAppConfigFile
         /// 2) Removing any 'xdt:Transform="Replace"' attributes from the <configProtectedData> XML section
         /// </summary>
         /// <param name="configFileName"></param>
-        private static void RemoveConfigProtectedDataXDTTransformXMLAttribute(string configFileName)
+        /// <param name="encrypt"</param>
+        private static void RemoveConfigProtectedDataXDTTransformXMLAttribute(string configFileName, bool encrypt)
         {
             XNamespace xdt = "http://schemas.microsoft.com/XML-Document-Transform";
 
@@ -136,7 +143,7 @@ namespace EncryptDecryptAppConfigFile
                 // First, we need to loop through the sections of the config that we are not going to encrypt and temporarily 
                 // add the xml namespace attribute for XDT so that each line in the config file doesn't have the definition auto-added as such
                 // Note: This would not be necessary if we could suppress or override the XObjectEvent Changed event, but this appears to be impossible
-                List<XElement> sectionsToAddXmlns = xdoc.Root.Elements().Where(section => section.Name.LocalName != "configProtectedData").ToList();
+                List<XElement> sectionsToAddXmlns = xdoc.Root.Elements().Where(section => !specialXDTSections.Contains(section.Name.LocalName)).ToList();
 
                 // Iterate through each section and temporarily add the xml namespace attribute
                 foreach (XElement section in sectionsToAddXmlns)
@@ -150,12 +157,19 @@ namespace EncryptDecryptAppConfigFile
                 // Remove the 'xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform"' attribute from the configuration node
                 rootNodeXmlnsAttr.Remove();
 
-                // Now remove the <connectionStrings> and <protectedAppSettings> sections' attributes
-                xdoc.Root.Element("connectionStrings").RemoveAttributes();
-                xdoc.Root.Element("protectedAppSettings").RemoveAttributes();
-
                 // Remove the xdt:Transform attribute from the <configProtectedData> section of the config file
                 configProtectedDataXDTAttr.Remove();
+                
+                // Now remove the <connectionStrings> and <protectedAppSettings> sections' attributes
+                xdoc.Root.Element("connectionStrings")?.RemoveAttributes();
+                xdoc.Root.Element("protectedAppSettings")?.RemoveAttributes();
+
+                // Re-add the "configProtectionProvider" attribute to the <connectionStrings> and <protectedAppSettings> sections
+                if (!encrypt)
+                {
+                    xdoc.Root.Element("connectionStrings")?.Add(new XAttribute("configProtectionProvider", EncryptionProviderName));
+                    xdoc.Root.Element("protectedAppSettings")?.Add(new XAttribute("configProtectionProvider", EncryptionProviderName));
+                }
 
                 // Save the file before continuing
                 xdoc.Save(configFileName);
@@ -178,23 +192,18 @@ namespace EncryptDecryptAppConfigFile
             xdoc.Root.Add(new XAttribute(XNamespace.Xmlns + "xdt", xdt));
 
             // Find every section where we need to remove the temporarily added xml namespace attribute
-            List<XElement> sectionsWithXmlns = xdoc.Root.Elements().Where(section => section.Name.LocalName != "connectionStrings"
-                                                                                  && section.Name.LocalName != "protectedAppSettings"
-                                                                                  && section.Name.LocalName != "configProtectedData").ToList();
+            List<XElement> sectionsWithXmlns = xdoc.Root.Elements().Where(section => !specialXDTSections.Contains(section.Name.LocalName)).ToList();
 
             // Remove the temporarily added xml namespace attribute for each of these sections
             sectionsWithXmlns.Attributes().Where(a => a.Name.LocalName == "xdt")?.Remove();
 
-            // Reinstate the xdt:Transform attribute from the <configProtectedData> section of the config file
+            // Reinstate the xdt:Transform attribute to the sections of the config file in the "specialXDTSections" list
             XAttribute xdtTransformReplace = new XAttribute(xdt + "Transform", "Replace");
 
-            XElement connectionStringsNode = xdoc.Root.Element("connectionStrings");
-            XElement protectedAppSettingsNode = xdoc.Root.Element("protectedAppSettings");
-            XElement configProtectedDataNode = xdoc.Root.Element("configProtectedData");
-
-            connectionStringsNode.Add(xdtTransformReplace);
-            protectedAppSettingsNode.Add(xdtTransformReplace);
-            configProtectedDataNode.Add(xdtTransformReplace);
+            foreach (string sectionName in specialXDTSections)
+            {
+                xdoc.Root.Element(sectionName)?.Add(xdtTransformReplace);
+            }
 
             // Save the file
             xdoc.Save(configFileName);

@@ -47,7 +47,7 @@ namespace EncryptDecryptAppConfigFile
         {
             try
             {
-                // Prep the <configProtectedData> section for encryption / decryption with this tool
+                // Prep the <configProtectedData> section for encryption/decryption with this tool
                 RemoveConfigProtectedDataXDTTransformXMLAttribute(configFileName, encrypt);
 
                 // Open the configuration file for use

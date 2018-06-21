@@ -93,7 +93,8 @@ namespace EncryptDecryptAppConfigFile
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(string.Format("There was a problem using the tool. Are you sure you opened this .exe in Administrator mode?\n{0}", 
+                    ex.ToString()));
             }
         }
 

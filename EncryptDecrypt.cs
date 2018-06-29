@@ -101,15 +101,19 @@ namespace EncryptDecryptAppConfigFile
         private static List<ConfigurationSection> InitializeConfigSections(Configuration configuration)
         {
             List<ConfigurationSection> configSections = new List<ConfigurationSection>();
-            ConfigurationSection connectionStringsSection = configuration.GetSection("connectionStrings");
-            ConfigurationSection protectedAppSettingsSection = configuration.GetSection("protectedAppSettings");
 
-            if (connectionStringsSection != null)
-                configSections.Add(connectionStringsSection);
+            List<string> configSectionNames = new List<string>(ConfigurationManager.AppSettings["configSections"].Split(new char[] { ';' }));
 
-            if(protectedAppSettingsSection != null)
-                configSections.Add(protectedAppSettingsSection);
+            foreach (string configSectionName in configSectionNames)
+            {
+                ConfigurationSection configSection = configuration.GetSection(configSectionName);
 
+                if (configSection != null)
+                {
+                    configSections.Add(configSection);
+                }
+            }
+            
             return configSections;
         }
         

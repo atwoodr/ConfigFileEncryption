@@ -17,3 +17,4 @@ C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.csproj.Gen
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.csproj.CoreCompileInputs.cache
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.exe
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.pdb
+C:\Repos\configencryption\bin\Release\EncryptDecryptAppConfigFile.exe.config

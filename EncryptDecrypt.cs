@@ -19,13 +19,17 @@ namespace EncryptDecryptAppConfigFile
         private static bool isUsingXDTNamespace = false;
 
         private static List<string> specialXDTSections = new List<string>();
+        private static List<string> configSectionNames = new List<string>(ConfigurationManager.AppSettings["configSections"].Split(new char[] { ';' }));
 
         public EncryptDecrypt()
         {
-            specialXDTSections.Add("connectionStrings");
-            specialXDTSections.Add("protectedAppSettings");
+            // Initialize the list of specialXDTSections as the configSectionNames list in App.config + the "configProtectedData" section
+            configSectionNames.ForEach(configSectionName => specialXDTSections.Add(configSectionName));
+            
+            // Also, always add the "configProtectedData" section
             specialXDTSections.Add("configProtectedData");
 
+            // Initialize the UI components
             InitializeComponent();
 
             // Set default radio button choice
@@ -101,9 +105,7 @@ namespace EncryptDecryptAppConfigFile
         private static List<ConfigurationSection> InitializeConfigSections(Configuration configuration)
         {
             List<ConfigurationSection> configSections = new List<ConfigurationSection>();
-
-            List<string> configSectionNames = new List<string>(ConfigurationManager.AppSettings["configSections"].Split(new char[] { ';' }));
-
+            
             foreach (string configSectionName in configSectionNames)
             {
                 ConfigurationSection configSection = configuration.GetSection(configSectionName);
@@ -164,21 +166,25 @@ namespace EncryptDecryptAppConfigFile
 
                 // Remove the xdt:Transform attribute from the <configProtectedData> section of the config file
                 configProtectedDataXDTAttr.Remove();
-                
-                // Now remove the <connectionStrings> and <protectedAppSettings> sections' attributes
-                xdoc.Root.Element("connectionStrings")?.RemoveAttributes();
-                xdoc.Root.Element("protectedAppSettings")?.RemoveAttributes();
 
-                // Re-add the "configProtectionProvider" attribute to the <connectionStrings> and <protectedAppSettings> sections
+                // Now remove the <connectionStrings> and <protectedAppSettings> sections' attributes
+                configSectionNames.ForEach(configSectionName => xdoc.Root.Element(configSectionName)?.RemoveAttributes());
+
+                // Re-add the "configProtectionProvider" attribute to the config sections being encrypted/decrypted
                 if (!encrypt)
                 {
-                    xdoc.Root.Element("connectionStrings")?.Add(new XAttribute("configProtectionProvider", EncryptionProviderName));
-                    xdoc.Root.Element("protectedAppSettings")?.Add(new XAttribute("configProtectionProvider", EncryptionProviderName));
+                    configSectionNames.ForEach(configSectionName => AddConfigProtectionProviderAttributeToConfigSection(xdoc, configSectionName));
                 }
 
                 // Save the file before continuing
                 xdoc.Save(configFileName);
             }
+        }
+
+        private static void AddConfigProtectionProviderAttributeToConfigSection(XDocument configFileXDoc, string configSectionName)
+        {
+            configFileXDoc.Root.Element(configSectionName)?
+                .Add(new XAttribute("configProtectionProvider", EncryptionProviderName));
         }
 
         /// <summary>

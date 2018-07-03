@@ -51,6 +51,13 @@ namespace EncryptDecryptAppConfigFile
         {
             try
             {
+                // First, ensure that you are performing the right operation based on the state of the file
+                // (i.e. only encrypt decrypted files and vice-versa
+                if (!ValidateConfigFileState(encrypt, configFileName))
+                {
+                    return;
+                }
+                
                 // Prep the <configProtectedData> section for encryption/decryption with this tool
                 RemoveConfigProtectedDataXDTTransformXMLAttribute(configFileName, encrypt);
 
@@ -100,6 +107,45 @@ namespace EncryptDecryptAppConfigFile
                 MessageBox.Show(string.Format("There was a problem using the tool. Are you sure you opened this .exe in Administrator mode?\n\n\n{0}", 
                     ex.ToString()));
             }
+        }
+
+        private static bool ValidateConfigFileState(bool encrypt, string configFileName)
+        {
+            if (encrypt)
+            {
+                // Ensure config file is in a decrypted state if we are trying to encrypt it
+                if (IsConfigFileEncrypted(configFileName))
+                {
+                    MessageBox.Show(string.Format("You cannot encrypt file {0}. \n\nIt is already encrypted.", configFileName));
+                    return false;
+                }
+            }
+            else
+            {
+                // Ensure config file is in an encrypted state if we are trying to decrypt it
+                if (!IsConfigFileEncrypted(configFileName))
+                {
+                    MessageBox.Show(string.Format("You cannot decrypt file {0}. \n\nIt is not encrypted.", configFileName));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool IsConfigFileEncrypted(string configFileName)
+        {
+            try
+            {
+                return XDocument.Load(configFileName).Root.Elements().Descendants()
+                    .Where(section => section.Name.LocalName == "EncryptedData").Any();
+            }
+            catch
+            {
+                MessageBox.Show(string.Format("Failed to load and validate file {0}", configFileName));
+            }
+
+            return false;
         }
 
         private static List<ConfigurationSection> InitializeConfigSections(Configuration configuration)

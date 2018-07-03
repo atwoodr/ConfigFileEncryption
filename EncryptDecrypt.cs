@@ -12,8 +12,8 @@ namespace EncryptDecryptAppConfigFile
     public partial class EncryptDecrypt : Form
     {
         // Using constants here instead of config file settings so that we can deploy this tool as a single .exe file not dependant on .config files
-        private static readonly string EncryptionProviderName = "PFEncryptionProvider";
-        private static readonly string FileType = "*.config";
+        private static readonly string EncryptionProviderName = ConfigurationManager.AppSettings["EncryptionProviderName"];
+        private static readonly string FileType = ConfigurationManager.AppSettings["FileType"];
 
         private string FileName = string.Empty;
         private static bool isUsingXDTNamespace = false;
@@ -224,14 +224,16 @@ namespace EncryptDecryptAppConfigFile
         }
 
         /// <summary>
-        /// Attempts to open the file in notepad++, but opens in notepad of notepad++ isn't installed
+        /// Attempts to open the file in the program specified in the App.config file, 
+        /// but opens in notepad if the specified program isn't installed.
         /// </summary>
         /// <param name="filePath"></param>
         private static void OpenConfigFileForViewing(string filePath)
         {
             try
             {
-                Process.Start("notepad++.exe", filePath);
+                string programForViewingName = ConfigurationManager.AppSettings["ConfigFileViewingProgram"];
+                Process.Start(programForViewingName, filePath);
             }
             catch (Exception)
             {

@@ -10,7 +10,6 @@ C:\Users\ch5045\Desktop\EncryptDecryptAppConfigFile\EncryptDecryptAppConfigFile\
 C:\Users\ch5045\Desktop\EncryptDecryptAppConfigFile\EncryptDecryptAppConfigFile\bin\Release\Elmah.dll
 C:\Repos\configencryption\bin\Release\EncryptDecryptAppConfigFile.exe
 C:\Repos\configencryption\bin\Release\EncryptDecryptAppConfigFile.pdb
-C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.csprojResolveAssemblyReference.cache
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.EncryptDecrypt.resources
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.Properties.Resources.resources
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.csproj.GenerateResource.Cache
@@ -18,3 +17,4 @@ C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.csproj.Cor
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.exe
 C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.pdb
 C:\Repos\configencryption\bin\Release\EncryptDecryptAppConfigFile.exe.config
+C:\Repos\configencryption\obj\x86\Release\EncryptDecryptAppConfigFile.csprojAssemblyReference.cache

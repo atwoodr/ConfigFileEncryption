@@ -19,10 +19,10 @@ C:\Users\ch5045\Desktop\EncryptDecryptAppConfigFile\EncryptDecryptAppConfigFile\
 C:\Users\ch5045\Desktop\EncryptDecryptAppConfigFile\EncryptDecryptAppConfigFile\bin\Debug\Elmah.dll
 C:\Repos\configencryption\bin\Debug\EncryptDecryptAppConfigFile.exe
 C:\Repos\configencryption\bin\Debug\EncryptDecryptAppConfigFile.pdb
-C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.csprojResolveAssemblyReference.cache
 C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.EncryptDecrypt.resources
 C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.Properties.Resources.resources
 C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.csproj.GenerateResource.Cache
 C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.csproj.CoreCompileInputs.cache
 C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.exe
 C:\Repos\configencryption\obj\x86\Debug\EncryptDecryptAppConfigFile.pdb
+C:\Repos\configencryption\bin\Debug\EncryptDecryptAppConfigFile.exe.config
